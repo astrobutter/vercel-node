@@ -18,3 +18,9 @@ app.get("/hello", (req, res) => {
 });
 
 export default app;
+
+// 👇 local only (Vercel sets process.env.VERCEL)
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => console.log(`Local server on http://localhost:${PORT}`));
+}

@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "local": "node server.js",
+    "local": "node app.js",
     "dev": "vercel dev",
     "deploy": "vercel",
-    "start": "node server.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
