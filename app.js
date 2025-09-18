@@ -17,10 +17,5 @@ app.get("/hello", (req, res) => {
   res.json({ message: `Hello, ${name}!` });
 });
 
-export default app;
+  app.listen(3000, () => console.log(`Local server on http://localhost:3000`));
 
-// 👇 local only (Vercel sets process.env.VERCEL)
-if (!process.env.VERCEL) {
-  const PORT = process.env.PORT || 3001;
-  app.listen(PORT, () => console.log(`Local server on http://localhost:${PORT}`));
-}
