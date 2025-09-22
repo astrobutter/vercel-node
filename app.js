@@ -31,6 +31,6 @@ app.use("/auth", userRouter);
 app.use("/doc", doctorRouter);
 app.use("/forum", forumRouter);
 
-mongoose.connect("mongodb+srv://user001:test12345@cluster0.orisnk7.mongodb.net/medicare?",{ useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGODB_URL,{ useNewUrlParser: true, useUnifiedTopology: true });
 
 app.listen(3000, () => console.log(`Local server on http://localhost:3000`));
