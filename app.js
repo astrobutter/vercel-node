@@ -15,38 +15,35 @@ app.get("/", (req, res) => {
 
 app.use("/api", routes);
 
-// 404
+// Optional 404 + error handlers
 app.use((req, res) => {
   res.status(404).json({ message: "Not Found" });
 });
-
-// Error handler
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(err);
-  const status =
-    res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+  const status = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
   res.status(status).json({ message: err.message || "Server Error" });
 });
 
-// --- Vercel serverless adapter ---
-// Keep and reuse a single Mongo connection across invocations.
+// ---- Vercel serverless adapter ----
 let mongoConn;
 async function ensureMongo() {
   if (!mongoConn) {
-    mongoConn = mongoose.connect(env.MONGO_URL);
+    console.log("Connecting to Mongo…");
+    mongoConn = mongoose.connect(env.MONGO_URL, {
+      serverSelectionTimeoutMS: 8000, // fail fast if Atlas blocks
+    });
   }
   await mongoConn;
 }
 
-// Export a default handler that Vercel will invoke
 export default async function handler(req, res) {
   try {
     await ensureMongo();
-    // Let Express handle the request
-    return app(req, res);
+    return app(req, res); // hand off to Express
   } catch (e) {
-    console.error("Mongo connection failed:", e);
-    res.status(500).json({ message: "Database connection failed" });
+    console.error("Startup failure:", e);
+    res.status(500).json({ message: "Startup failure", detail: e.message });
   }
 }
