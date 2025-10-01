@@ -1,13 +1,8 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import { MockRoutes } from "./Routes/MockRoutes/MockRoutes.js";
-import { MongoRoutes } from "./Routes/MongoData/MongoData.js";
-import { bookingRouter } from "./Routes/bookings.js";
-import { userRouter } from "./Routes/user.js";
-import { doctorRouter } from "./Routes/doctor.js";
-import { forumRouter } from "./Routes/forum.js";
-import 'dotenv/config';
+import { env } from './Config/env.js';
+import routes from './Routes/index.js';
 
 const app = express();
 app.use(express.json());
@@ -16,21 +11,29 @@ app.use(cors({ origin: true, credentials: true }));
 app.get("/", (req, res) => {
   res.json({ ok: true, message: "Hello from Express app (shared for local & Vercel)!" });
 });
-app.get("/ping", (req, res) => res.send("pong"));
-app.get("/hello", (req, res) => {
-  const name = req.query.name || "friend";
-  res.json({ message: `Hello, ${name}!` });
+
+app.use('/api', routes);
+
+// Not found handler
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Not Found' });
 });
-app.get("/health", (_, res) => res.send("ok"));
 
-app.use("/mock", MockRoutes);
-app.use("/mongo", MongoRoutes);
+// Error handler
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  const status = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+  res.status(status).json({ message: err.message || 'Server Error' });
+});
 
-app.use("/create-checkout-session", bookingRouter);
-app.use("/auth", userRouter);
-app.use("/doc", doctorRouter);
-app.use("/forum", forumRouter);
+const start = async () => {
+  await mongoose.connect(env.MONGO_URL);
+  app.listen(env.PORT, () => {
+    console.log(`API running → http://localhost:${env.PORT}`);
+  });
+};
 
-mongoose.connect(process.env.MONGODB_URL,{ useNewUrlParser: true, useUnifiedTopology: true });
-
-app.listen(3000, () => console.log(`Local server on http://localhost:3000`));
+start().catch((e) => {
+  console.error('Failed to start server:', e);
+  process.exit(1);
+});
