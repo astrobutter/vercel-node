@@ -28,6 +28,7 @@ app.use((err, req, res, next) => {
 
 // ---- Vercel serverless adapter ----
 let mongoConn;
+
 async function ensureMongo() {
   if (!mongoConn) {
     console.log("Connecting to Mongo…");
