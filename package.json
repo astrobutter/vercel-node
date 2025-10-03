@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-
     "dev": "nodemon --watch . --exec node server.local.js",
-    "build": "npm install",
-    "local": "node app.js",
+    "start": "node server.local.js",
+    "build": "echo \"no build step\"",
     "deploy": "vercel",
-    "start": "node server.local.js"
+    "vercel-dev": "vercel dev"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
